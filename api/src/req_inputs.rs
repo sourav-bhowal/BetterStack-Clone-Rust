@@ -4,4 +4,11 @@ use serde::{Deserialize, Serialize};
 #[derive(Deserialize, Serialize)]
 pub struct CreateWebsiteRequest {
     pub url: String,
+    pub user_id: String,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct CreateUserRequest {
+    pub email: String,
+    pub password: String,
 }

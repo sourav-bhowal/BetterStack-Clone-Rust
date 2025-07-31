@@ -1,0 +1,12 @@
+[package]
+name = "database"
+version = "0.1.0"
+edition = "2024"
+
+[dependencies]
+diesel = { version = "2.2.0", features = ["postgres", "chrono"] }
+uuid = { version = "1.17.0", features = ["v4"] }
+argon2 = { version = "0.5", features = ["std"] }
+rand_core = "0.6"
+chrono = "0.4.41"
+dotenvy = "0.15.7"
