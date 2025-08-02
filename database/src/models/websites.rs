@@ -1,5 +1,5 @@
 
-use crate::{db::Database};
+use crate::{db::Database, models::users::User};
 use chrono::NaiveDateTime;
 use diesel::{prelude::*, result::Error};
 
@@ -14,10 +14,15 @@ pub struct Website {
    pub updated_at: NaiveDateTime,
 }
 
+pub struct  WebsiteWithUser {
+    pub website: Website,
+    pub user: User,
+}
+
 // Define a trait for website operations
 pub trait WebsiteMethods {
     fn create_website(&mut self, url: String, user_id: String) -> Result<String, Error>;
-    fn get_website(&mut self, website_id: &str) -> Result<Website, Error>;
+    fn get_website(&mut self, website_id: &str) -> Result<WebsiteWithUser, Error>;
     fn delete_website(&mut self, website_id: &str) -> Result<String, Error>;
 }
 
@@ -37,22 +42,25 @@ impl WebsiteMethods for Database {
         let result = diesel::insert_into(website_table)
             .values(&website)
             .returning(crate::schema::website::id)
-            .get_result(&mut self.connection)
-            .expect("Error inserting new website");
+            .get_result(&mut self.connection)?;
 
         Ok(result)
     }
 
-    fn get_website(&mut self, website_id: &str) -> Result<Website, Error> {
+    fn get_website(&mut self, website_id: &str) -> Result<WebsiteWithUser, Error> {
         use crate::schema::website::dsl::*;
 
-        let result = website
+        let (website_data, user_data) = website
+            .inner_join(crate::schema::user::table)
             .filter(id.eq(website_id))
-            .select(Website::as_select())
-            .first(&mut self.connection)
-            .expect("Error loading website");
+            .select((Website::as_select(), User::as_select()))
+            .first::<(Website, User)>(&mut self.connection)
+            .map_err(|_| Error::NotFound)?;
 
-        Ok(result)
+        Ok(WebsiteWithUser {
+            website: website_data,
+            user: user_data,
+        })
     }
 
     fn delete_website(&mut self, website_id: &str) -> Result<String, Error> {

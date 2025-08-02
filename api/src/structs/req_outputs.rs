@@ -21,4 +21,11 @@ pub struct SignInUserResponse {
 pub struct GetWebsiteResponse {
     pub id: String,
     pub url: String,
+    pub user: User,
+}
+
+#[derive(Deserialize, Serialize)]
+pub struct User {
+    pub id: String,
+    pub email: String,
 }

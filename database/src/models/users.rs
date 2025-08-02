@@ -19,8 +19,6 @@ pub struct User {
 pub trait UserMethods {
     fn sign_up(&mut self, email: String, password: String) -> Result<String, Error>;
     fn sign_in(&mut self, input_email: String, input_password: String) -> Result<User, Error>;
-    fn delete_user(&self, user_id: &str) -> String;
-    fn get_user(&self, user_id: &str) -> String;
 }
 
 // Implement the trait for Database
@@ -82,15 +80,5 @@ impl UserMethods for Database {
         } else {
             Err(Error::NotFound)
         }
-    }
-
-    fn delete_user(&self, user_id: &str) -> String {
-        // Simulate deleting a user by ID
-        format!("deleted user: {}", user_id)
-    }
-
-    fn get_user(&self, user_id: &str) -> String {
-        // Simulate fetching a user by ID
-        format!("user: {}", user_id)
     }
 }
